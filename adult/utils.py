@@ -3,6 +3,7 @@ import numpy as np
 from numpy.random import beta
 from sklearn.metrics import average_precision_score
 from tqdm import tqdm
+import itertools
 
 import torch
 import torch.nn as nn
@@ -13,8 +14,8 @@ def sample_batch_sen_idx(X, A, y, batch_size, s):
     batch_idx = np.random.choice(np.where(A==s)[0], size=batch_size, replace=False).tolist()
     batch_x = X[batch_idx]
     batch_y = y[batch_idx]
-    batch_x = torch.tensor(batch_x).cuda().float()
-    batch_y = torch.tensor(batch_y).cuda().float()
+    batch_x = torch.tensor(batch_x).float()
+    batch_y = torch.tensor(batch_y).float()
 
     return batch_x, batch_y
 
@@ -26,8 +27,8 @@ def sample_batch_sen_idx_y(X, A, y, batch_size, s):
 
     batch_x = X[batch_idx]
     batch_y = y[batch_idx]
-    batch_x = torch.tensor(batch_x).cuda().float()
-    batch_y = torch.tensor(batch_y).cuda().float()
+    batch_x = torch.tensor(batch_x).float()
+    batch_y = torch.tensor(batch_y).float()
 
     return batch_x, batch_y
 
@@ -149,8 +150,8 @@ def evaluate_dp(model, X_test, y_test, A_test):
 
     X_test_0 = X_test[idx_0]
     X_test_1 = X_test[idx_1]
-    X_test_0 = torch.tensor(X_test_0).cuda().float()
-    X_test_1 = torch.tensor(X_test_1).cuda().float()
+    X_test_0 = torch.tensor(X_test_0).float()
+    X_test_1 = torch.tensor(X_test_1).float()
 
     pred_0 = model(X_test_0)
     pred_1 = model(X_test_1)
@@ -159,7 +160,7 @@ def evaluate_dp(model, X_test, y_test, A_test):
     gap = abs(gap.data.cpu().numpy())
 
     # calculate average precision
-    X_test_cuda = torch.tensor(X_test).cuda().float()
+    X_test_cuda = torch.tensor(X_test).float()
     output = model(X_test_cuda)
     y_scores = output[:, 0].data.cpu().numpy()
     ap = average_precision_score(y_test, y_scores)
@@ -179,10 +180,10 @@ def evaluate_eo(model, X_test, y_test, A_test):
     X_test_10 = X_test[idx_10]
     X_test_11 = X_test[idx_11]
 
-    X_test_00 = torch.tensor(X_test_00).cuda().float()
-    X_test_01 = torch.tensor(X_test_01).cuda().float()
-    X_test_10 = torch.tensor(X_test_10).cuda().float()
-    X_test_11 = torch.tensor(X_test_11).cuda().float()
+    X_test_00 = torch.tensor(X_test_00).float()
+    X_test_01 = torch.tensor(X_test_01).float()
+    X_test_10 = torch.tensor(X_test_10).float()
+    X_test_11 = torch.tensor(X_test_11).float()
 
     pred_00 = model(X_test_00)
     pred_01 = model(X_test_01)
@@ -197,9 +198,18 @@ def evaluate_eo(model, X_test, y_test, A_test):
     gap = gap_0 + gap_1
 
     # calculate average precision
-    X_test_cuda = torch.tensor(X_test).cuda().float()
+    X_test_cuda = torch.tensor(X_test).float()
     output = model(X_test_cuda)
     y_scores = output[:, 0].data.cpu().numpy()
     ap = average_precision_score(y_test, y_scores)
 
     return ap, gap
+
+
+def get_configurations(params: {}):
+    # get all parameter configurations for individual runs
+    list_params = [key for key in params.keys() if type(params[key]) is list]
+    param_values = [params[key] for key in list_params]
+    hyper_param_settings = list(itertools.product(*param_values))
+    return list_params, hyper_param_settings
+

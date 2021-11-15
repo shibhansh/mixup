@@ -1,6 +1,8 @@
 import numpy as np
 import argparse
+import json
 import torch
+import pickle
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
@@ -11,7 +13,7 @@ from model import Net
 from utils import train_dp, evaluate_dp
 from utils import train_eo, evaluate_eo
 
-def run_experiments(method='mixup', mode='dp', lam=0.5, num_exp=10):
+def run_experiments(method='mixup', mode='dp', lam=0.5, num_exp=10, wd=0, data_file=''):
     '''
     Retrain each model for 10 times and report the mean ap and dp.
     '''
@@ -25,8 +27,8 @@ def run_experiments(method='mixup', mode='dp', lam=0.5, num_exp=10):
         X_train, X_val, X_test, y_train, y_val, y_test, A_train, A_val, A_test = preprocess_adult_data(seed = i)
 
         # initialize model
-        model = Net(input_size=len(X_train[0])).cuda()
-        optimizer = optim.Adam(model.parameters(), lr=1e-3)
+        model = Net(input_size=len(X_train[0]))
+        optimizer = optim.Adam(model.parameters(), lr=1e-3, weight_decay=wd)
         criterion = nn.BCELoss()
 
         # run experiments
@@ -59,13 +61,31 @@ def run_experiments(method='mixup', mode='dp', lam=0.5, num_exp=10):
     print('--------AVG---------')
     print('Average Precision', np.mean(ap))
     print(mode + ' gap',  np.mean(gap))
+    print(data_file)
+    with open(data_file, 'wb+') as f:
+        pickle.dump([np.mean(ap), np.mean(gap)], f)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Adult Experiment')
-    parser.add_argument('--method', default='mixup', type=str, help='mixup/GapReg/erm')
-    parser.add_argument('--mode', default='dp', type=str, help='dp/eo')
-    parser.add_argument('--lam', default=0.5, type=float, help='Lambda for regularization')
+    # parser.add_argument('--method', default='GapReg', type=str, help='mixup/GapReg/erm')
+    # parser.add_argument('--mode', default='dp', type=str, help='dp/eo')
+    # parser.add_argument('--lam', default=0.5, type=float, help='Lambda for regularization')
+    # parser.add_argument('--wd', default=3e-2, type=float, help='Weight decay for L2')
+    parser.add_argument('-c', default='cfg/temp.json', type=str, help='Basic config file')
     args = parser.parse_args()
 
-    run_experiments(args.method, args.mode, args.lam)
+    cfg_file = args.c
+
+    with open(cfg_file, 'r') as f:
+        params = json.load(f)
+
+    method = params['method']
+    mode = params['mode']
+    lam = params['lam']
+    wd = params['wd']
+    num_exp = params['num_exp']
+    data_file = params['data_file']
+
+    run_experiments(method, mode, lam, wd=wd, data_file=data_file, num_exp=num_exp)
 
