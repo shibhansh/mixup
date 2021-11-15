@@ -1,0 +1,9 @@
+{
+  "method": "GapReg",
+  "num_runs": 1,
+  "wd": [1e-3, 1e-4, 1e-5, 1e-6],
+  "lam": [0.1, 0.3, 0.5, 0.7, 0.9],
+  "mode": "dp",
+  "num_exp": 30,
+  "data_dir": "data/l2_gap_3/"
+}
