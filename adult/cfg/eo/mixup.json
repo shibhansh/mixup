@@ -3,7 +3,7 @@
   "num_runs": 1,
   "wd": 0,
   "lam": [0.1, 0.3, 0.5, 0.7, 0.9],
-  "mode": "dp",
+  "mode": "eo",
   "num_exp": 30,
   "data_dir": "data/eo/mixup/"
 }
