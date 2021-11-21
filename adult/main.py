@@ -15,7 +15,7 @@ from utils import train_dp, evaluate_dp
 from utils import train_eo, evaluate_eo
 from utils import train_ae, evaluate_ae
 
-def run_experiments(method='mixup', mode='dp', lam=0.5, num_exp=10, wd=0, data_file=''):
+def run_experiments(method='mixup', mode='dp', train_mode='dp', lam=0.5, num_exp=10, wd=0, data_file=''):
     '''
     Retrain each model for 10 times and report the mean ap and dp.
     '''
@@ -41,17 +41,20 @@ def run_experiments(method='mixup', mode='dp', lam=0.5, num_exp=10, wd=0, data_f
         ap_train_epoch = []
         gap_train_epoch = []
         for j in tqdm(range(10)):
-            if mode == 'dp':
+            if train_mode == 'dp':
                 train_dp(model, criterion, optimizer, X_train, A_train, y_train, method, lam, niter=10)
+            if train_mode == 'eo':
+                train_eo(model, criterion, optimizer, X_train, A_train, y_train, method, lam)
+            if train_mode == 'ae':
+                train_ae(model, criterion, optimizer, X_train, A_train, y_train, method, lam)
+            if mode == 'dp':
                 ap_val, gap_val = evaluate_dp(model, X_val, y_val, A_val)
                 ap_test, gap_test = evaluate_dp(model, X_test, y_test, A_test)
                 ap_train, gap_train = evaluate_dp(model, X_train, y_train, A_train)
             elif mode == 'eo':
-                train_eo(model, criterion, optimizer, X_train, A_train, y_train, method, lam)
                 ap_val, gap_val = evaluate_eo(model, X_val, y_val, A_val)
                 ap_test, gap_test = evaluate_eo(model, X_test, y_test, A_test)
             elif mode == 'ae':
-                train_ae(model, criterion, optimizer, X_train, A_train, y_train, method, lam)
                 ap_val, gap_val = evaluate_ae(model, X_val, y_val, A_val)
                 ap_test, gap_test = evaluate_ae(model, X_test, y_test, A_test)
             if j > 0:
@@ -97,10 +100,13 @@ if __name__ == '__main__':
 
     method = params['method']
     mode = params['mode']
+    train_mode = mode
+    if 'train_mode' in params.cfg():
+        train_mode = params['train_mode']
     lam = params['lam']
     wd = params['wd']
     num_exp = params['num_exp']
     data_file = params['data_file']
 
-    run_experiments(method, mode, lam, wd=wd, data_file=data_file, num_exp=num_exp)
+    run_experiments(method, mode, train_mode, lam, wd=wd, data_file=data_file, num_exp=num_exp)
 
