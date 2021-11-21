@@ -7,11 +7,13 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from tqdm import tqdm
+import matplotlib.pyplot as plt
 
 from dataset import preprocess_adult_data
 from model import Net
 from utils import train_dp, evaluate_dp
 from utils import train_eo, evaluate_eo
+from utils import train_ae, evaluate_ae
 
 def run_experiments(method='mixup', mode='dp', lam=0.5, num_exp=10, wd=0, data_file=''):
     '''
@@ -36,22 +38,35 @@ def run_experiments(method='mixup', mode='dp', lam=0.5, num_exp=10, wd=0, data_f
         gap_val_epoch = []
         ap_test_epoch = []
         gap_test_epoch = []
+        ap_train_epoch = []
+        gap_train_epoch = []
         for j in tqdm(range(10)):
             if mode == 'dp':
-                train_dp(model, criterion, optimizer, X_train, A_train, y_train, method, lam)
+                train_dp(model, criterion, optimizer, X_train, A_train, y_train, method, lam, niter=10)
                 ap_val, gap_val = evaluate_dp(model, X_val, y_val, A_val)
                 ap_test, gap_test = evaluate_dp(model, X_test, y_test, A_test)
+                ap_train, gap_train = evaluate_dp(model, X_train, y_train, A_train)
             elif mode == 'eo':
                 train_eo(model, criterion, optimizer, X_train, A_train, y_train, method, lam)
                 ap_val, gap_val = evaluate_eo(model, X_val, y_val, A_val)
                 ap_test, gap_test = evaluate_eo(model, X_test, y_test, A_test)
-
+            elif mode == 'ae':
+                train_ae(model, criterion, optimizer, X_train, A_train, y_train, method, lam)
+                ap_val, gap_val = evaluate_ae(model, X_val, y_val, A_val)
+                ap_test, gap_test = evaluate_ae(model, X_test, y_test, A_test)
             if j > 0:
                 ap_val_epoch.append(ap_val)
                 ap_test_epoch.append(ap_test)
+                # ap_train_epoch.append(ap_train)
                 gap_val_epoch.append(gap_val)
                 gap_test_epoch.append(gap_test)
+                # gap_train_epoch.append(gap_train)
 
+        # plt.plot(gap_train_epoch, label='train')
+        # plt.plot(gap_test_epoch, label='test')
+        # plt.plot(gap_val_epoch, label='val')
+        # plt.legend()
+        # plt.show()
         # best model based on validation performance
         idx = gap_val_epoch.index(min(gap_val_epoch))
         gap.append(gap_test_epoch[idx])
