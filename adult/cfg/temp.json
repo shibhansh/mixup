@@ -1,8 +1,7 @@
 {
   "method": "GapReg",
-  "num_runs": 1,
   "lam": 0.5,
-  "mode": "dp",
+  "mode": "eo",
   "wd": 0,
   "num_exp": 2,
   "data_dir": "data/temp/",
