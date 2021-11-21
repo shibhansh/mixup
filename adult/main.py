@@ -101,7 +101,7 @@ if __name__ == '__main__':
     method = params['method']
     mode = params['mode']
     train_mode = mode
-    if 'train_mode' in params.cfg():
+    if 'train_mode' in params.keys():
         train_mode = params['train_mode']
     lam = params['lam']
     wd = params['wd']
