@@ -1,0 +1,10 @@
+{
+  "method": "GapReg",
+  "num_runs": 1,
+  "lam": [0.1, 0.3, 0.5, 0.7, 0.9],
+  "mode": "ae",
+  "train_mode": "eo",
+  "wd": 0,
+  "num_exp": 10,
+  "data_dir": "data/ae/gap_reg_2/"
+}
