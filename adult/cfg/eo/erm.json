@@ -1,0 +1,10 @@
+{
+  "method": "erm",
+  "num_runs": 1,
+  "wd": 0,
+  "lam": 0,
+  "mode": "eo",
+  "train_mode": "dp",
+  "num_exp": 30,
+  "data_dir": "data/eo/erm/"
+}

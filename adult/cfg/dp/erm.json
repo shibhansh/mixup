@@ -6,5 +6,5 @@
   "mode": "dp",
   "train_mode": "dp",
   "num_exp": 30,
-  "data_dir": "data/erm/"
+  "data_dir": "data/dp/erm/"
 }
