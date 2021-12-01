@@ -2,6 +2,7 @@
   "method": "erm",
   "wd": 0,
   "lam": 0,
+  "target": 2,
   "num_epochs": 10,
-  "data_dir": "data/dp/erm/"
+  "data_file": "data/dp/erm/0"
 }
