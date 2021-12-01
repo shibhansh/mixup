@@ -6,6 +6,7 @@ from numpy.random import beta
 from tqdm import tqdm
 import pickle
 from pprint import pprint
+import json
 
 import torch
 import torch.nn as nn
@@ -24,6 +25,7 @@ def test_model(model, model_linear, dataloader, dataloader_0, dataloader_1):
     ap_1, score_1 = evaluate(model, model_linear, dataloader_1)
     gap = abs(score_0 - score_1)
     pprint("AP: {:.4f} DP Gap: {:.4f}".format(ap, gap))
+    return ap, gap
 
 
 
@@ -121,13 +123,26 @@ def fit_model(epochs, dataloader, dataloader_0, dataloader_1, mode='mixup_smooth
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='CelebA Experiment')
-    parser.add_argument('--method', default='mixup', type=str, help='mixup/mixup_manifold/GapReg/erm')
-    parser.add_argument('--lam', default=20, type=float, help='Lambda for regularization')
-    parser.add_argument('--target_id', default=2, type=int, help='2:attractive/31:smile/33:wavy hair')
+    # parser.add_argument('--method', default='mixup', type=str, help='mixup/mixup_manifold/GapReg/erm')
+    # parser.add_argument('--lam', default=20, type=float, help='Lambda for regularization')
+    # parser.add_argument('--target_id', default=2, type=int, help='2:attractive/31:smile/33:wavy hair')
+    parser.add_argument('-c', default='cfg/temp.json', type=str, help='Basic config file')
     args = parser.parse_args()
 
+    cfg_file = args.c
+    with open(cfg_file, 'r') as f:
+        params = json.load(f)
+
+    method = params['method']
+    lam = params['lam']
+    target_id = params['target']
+    wd = params['wd']
+    num_epochs = 100
+    if 'num_epochs' in params.keys():
+        num_epochs = params['num_epochs']
+    data_file = params['data_file']
+
     # Load Celeb dataset
-    target_id = args.target_id
     with open('celeba/data_frame.pickle', 'rb') as handle:
         df = pickle.load(handle)
     train_df = df['train']
@@ -151,13 +166,25 @@ if __name__ == '__main__':
     model_linear = LinearModel().cuda()
 
     criterion = nn.BCELoss()
-    optimizer = optim.Adam(model.parameters(), lr = 1e-3)
-    optimizer_linear = optim.Adam(model_linear.parameters(), lr = 1e-3)
+    optimizer = optim.Adam(model.parameters(), lr = 1e-3, weight_decay=wd)
+    optimizer_linear = optim.Adam(model_linear.parameters(), lr = 1e-3, weight_decay=wd)
 
-    for i in range(1, 100):
+    ap_test_epoch = []
+    gap_test_epoch = []
+
+    for i in range(1, num_epochs):
         fit_model(i, train_dataloader, train_dataloader_0, train_dataloader_1, args.method, args.lam)
         print('val:')
-        test_model(model, model_linear, valid_dataloader, valid_dataloader_0, valid_dataloader_1)
+        ap_val, gap_val = test_model(model, model_linear, valid_dataloader, valid_dataloader_0, valid_dataloader_1)
         print('test:')
-        test_model(model, model_linear, test_dataloader, test_dataloader_0, test_dataloader_1)
+        ap_test, gap_test = test_model(model, model_linear, test_dataloader, test_dataloader_0, test_dataloader_1)
 
+        ap_test_epoch.append(ap_test)
+        gap_test_epoch.append(gap_test)
+
+    print('--------AVG---------')
+    print('Average Precision', ap_test)
+    print('gap',  gap_test)
+    print(data_file)
+    with open(data_file, 'wb+') as f:
+        pickle.dump([ap_test, gap_test], f)
