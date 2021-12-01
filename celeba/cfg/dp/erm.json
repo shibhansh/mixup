@@ -1,0 +1,7 @@
+{
+  "method": "erm",
+  "wd": 0,
+  "lam": 0,
+  "num_epochs": 10,
+  "data_dir": "data/dp/erm/"
+}
