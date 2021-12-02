@@ -1,5 +1,6 @@
 {
   "method": "erm",
+  "num_runs": 1,
   "wd": 0,
   "lam": 0,
   "target": 2,

@@ -7,7 +7,6 @@ from tqdm import tqdm
 import pickle
 from pprint import pprint
 import json
-import subprocess
 
 import torch
 import torch.nn as nn
@@ -141,11 +140,7 @@ if __name__ == '__main__':
     num_epochs = 100
     if 'num_epochs' in params.keys():
         num_epochs = params['num_epochs']
-    data_dir = params['data_dir']
-    data_file = data_dir + '0'
-
-    bash_command = "mkdir -p " + params['data_dir']
-    subprocess.Popen(bash_command.split(), stdout=subprocess.PIPE)
+    data_file = params['data_file']
 
     # Load Celeb dataset
     with open('celeba/data_frame.pickle', 'rb') as handle:
