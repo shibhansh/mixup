@@ -4,6 +4,6 @@
   "wd": 0,
   "lam": 0,
   "target": 2,
-  "num_epochs": 10,
+  "num_epochs": 2,
   "data_dir": "data/dp/erm/"
 }
