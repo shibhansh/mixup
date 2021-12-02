@@ -54,9 +54,9 @@ def get_loader(df, data_path, target_id, batch_size, gender=None, target=None):
     dl = CelebA(df, data_path, target_id, transform=tfms, gender=gender, target=target)
 
     if 'train' in data_path:
-        dloader = torch.utils.data.DataLoader(dl, shuffle=True, batch_size=batch_size, num_workers=3, drop_last=True)
+        dloader = torch.utils.data.DataLoader(dl, shuffle=True, batch_size=batch_size, num_workers=1, drop_last=True)
     else:
-        dloader = torch.utils.data.DataLoader(dl, shuffle=False, batch_size=batch_size, num_workers=3)
+        dloader = torch.utils.data.DataLoader(dl, shuffle=False, batch_size=batch_size, num_workers=1)
 
     return dloader
 
