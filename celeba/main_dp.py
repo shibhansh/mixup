@@ -182,11 +182,7 @@ if __name__ == '__main__':
         ap_test_epoch.append(ap_test)
         gap_test_epoch.append(gap_test)
 
-    print('--------AVG---------')
-    print('Average Precision', ap_test)
-    print('gap',  gap_test)
+        print(data_file)
+        with open(data_file, 'wb+') as f:
+            pickle.dump([ap_test, gap_test], f)
 
-
-    print(data_file)
-    with open(data_file, 'wb+') as f:
-        pickle.dump([ap_test, gap_test], f)
