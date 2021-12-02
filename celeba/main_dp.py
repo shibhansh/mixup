@@ -178,7 +178,7 @@ if __name__ == '__main__':
     gap_test_epoch = []
 
     for i in range(1, num_epochs):
-        fit_model(i, train_dataloader, train_dataloader_0, train_dataloader_1, args.method, args.lam)
+        fit_model(i, train_dataloader, train_dataloader_0, train_dataloader_1, method, lam)
         print('val:')
         ap_val, gap_val = test_model(model, model_linear, valid_dataloader, valid_dataloader_0, valid_dataloader_1)
         print('test:')
