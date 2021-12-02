@@ -144,7 +144,7 @@ if __name__ == '__main__':
     data_dir = params['data_dir']
     data_file = data_dir + '0'
 
-    bash_command = "mkdir -p" + params['data_dir']
+    bash_command = "mkdir -p " + params['data_dir']
     subprocess.Popen(bash_command.split(), stdout=subprocess.PIPE)
 
     # Load Celeb dataset
