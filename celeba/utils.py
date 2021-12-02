@@ -3,6 +3,8 @@ import torch
 import numpy as np
 from PIL import Image
 from sklearn.metrics import average_precision_score
+import itertools
+from tqdm import tqdm
 
 from torchvision import transforms
 from torch.utils.data import Dataset
@@ -77,3 +79,11 @@ def evaluate(model, model_linear, dataloader):
 
 def BCELoss(pred, target):
     return -(target * torch.log(pred) + (1 - target) * torch.log(1 - pred))
+
+
+def get_configurations(params: {}):
+    # get all parameter configurations for individual runs
+    list_params = [key for key in params.keys() if type(params[key]) is list]
+    param_values = [params[key] for key in list_params]
+    hyper_param_settings = list(itertools.product(*param_values))
+    return list_params, hyper_param_settings
