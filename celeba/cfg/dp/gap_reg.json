@@ -4,6 +4,6 @@
   "wd": 0,
   "lam": [0.1, 0.3, 0.5, 0.7, 0.9],
   "target": 2,
-  "num_epochs": 10,
+  "num_epochs": 100,
   "data_dir": "data/dp/gap_reg/"
 }
