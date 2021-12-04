@@ -1,0 +1,9 @@
+{
+  "method": "GapReg",
+  "num_runs": 1,
+  "wd": 0,
+  "lam": [0.25, 0.5, 1, 2, 4],
+  "target": 2,
+  "num_epochs": 100,
+  "data_dir": "data/dp/gap_reg_1/"
+}
