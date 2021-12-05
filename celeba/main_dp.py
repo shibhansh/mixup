@@ -169,8 +169,9 @@ if __name__ == '__main__':
     optimizer = optim.Adam(model.parameters(), lr = 1e-3, weight_decay=wd)
     optimizer_linear = optim.Adam(model_linear.parameters(), lr = 1e-3, weight_decay=wd)
 
-    ap_test_epoch = []
-    gap_test_epoch = []
+    ap_test_epoch, ap_val_epoch = [], []
+    gap_test_epoch, gap_val_epoch = [], []
+    best_ap_test, best_gap_test = 0, 0
 
     for i in range(1, num_epochs):
         fit_model(i, train_dataloader, train_dataloader_0, train_dataloader_1, method, lam)
@@ -181,8 +182,14 @@ if __name__ == '__main__':
 
         ap_test_epoch.append(ap_test)
         gap_test_epoch.append(gap_test)
+        ap_val_epoch.append(ap_val)
+        gap_val_epoch.append(gap_val)
+
+        idx = gap_val_epoch.index(min(gap_val_epoch))
+        best_gap_test = gap_test_epoch[idx]
+        best_ap_test = ap_test_epoch[idx]
 
         print(data_file)
         with open(data_file, 'wb+') as f:
-            pickle.dump([ap_test, gap_test], f)
+            pickle.dump([best_ap_test, best_gap_test], f)
 
