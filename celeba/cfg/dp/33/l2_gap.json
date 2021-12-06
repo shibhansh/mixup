@@ -1,0 +1,9 @@
+{
+  "method": "GapReg",
+  "num_runs": 1,
+  "wd": [1e-3, 1e-5, 1e-5, 1e-6],
+  "lam": [3, 10, 30, 100],
+  "target": 2,
+  "num_epochs": 100,
+  "data_dir": "data/dp/33/l2_gap/"
+}
